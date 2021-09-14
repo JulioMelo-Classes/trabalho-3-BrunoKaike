@@ -1,17 +1,24 @@
-# LP1 Projeto 3
+# Snaze
 
-Neste projeto você irá fazer um simulador para o jogo snaze, melhores informações podem ser encontradas no [documento de especificação](https://www.overleaf.com/read/prcdstrjrdjr);
+Snaze é um projeto para simular um jogo em que uma cobra tem que coletar todas as comidas em um labirinto sem perder todas as suas vidas batendo em paredes ou em si mesma.
 
-## Sistema de build
+## Objetivos
 
-Escolha um dos sistemas de build que melhor agradar você, lembre que já vimos exemplos com [Makefile](https://www.gnu.org/software/make/manual/make.html) 
-e [Cmake](https://cmake.org/). Esta versão usa compilação básica usando a linha de comando, mas fica a ~~obrigação~~ sugestão, caso você queira mudar.
+Projeto desenvolvido e apresentado ao curso de Tecnologia da Informação da Universidade Federal do Rio Grande do Norte, como requisito parcial para obtenção de nota na disciplina de Linguagem de Programação I, ministrada pelo professor Julio Cesar Paulino de Melo(*<julio.melo@imd.ufrn.br>*).
 
-## Organização
+## O que é Snaze?
+Snaze é uma mistura do clássico jogo de arcade [Snake video game](https://en.wikipedia.org/wiki/Snake_(video_game_genre)) com o jogo [Mouse in the Maze](https://www.youtube.com/watch?v=Kdzzbl_Nd4I).
 
-Este repositório tem algumas classes iniciais que podem te ajudar a fazer o projeto, porém, fique à vontade para explorar as possibilidades.
+## Sobre o projeto
+<center>
+<img src="data/snaze.png">
+</center>
 
-## Compilando e executando o exemplo
+O projeto Snaze foi desenvolvido utilizando da linguagem C++.
+
+A simulação do jogo Snaze carrega o nível do labirinto a partir de um arquivo texto de entrada, cujo nome é fornecido via argumento de linha de comando, e controla os movimentos da cobra por meio de uma IA.
+
+## Compilando e executando o projeto
 
 No linux você pode compilar usando o g++. Apenas faça clone do projeto, e faça:
 
@@ -33,4 +40,61 @@ cl src/*.cpp -I./include
 .\Snaze.exe
 ```
 
-__Observação sobre o windows__: Ao realizar testes meu sistema detectou o programa como um virus, para conseguir executar eu tive que usar a versão compilada com o g++ ou configurar o windows defender para ignorar o executável que está na pasta do projeto (o problema só ocorre com a versão compilada pelo CL).
+## Testes por linha de comando
+
+<details>
+<summary>Testes de funcionalidade</summary>
+
+
+<p>Spawn randômico</p>
+
+```console
+./concordo < ../data/maze1.txt
+
+```
+
+<p>Spawn definido</p>
+
+```console
+./concordo < ../data/maze1.txt
+
+```
+
+</details>
+
+<details>
+<summary>Testes de Erro</summary>
+
+
+<p>Uma ou mais dimensões superiores a 100</p>
+
+```console
+./main data/erro1.txt comRabo
+
+```
+
+<p>Uma ou mais dimensões inferiores a 1</p>
+
+```console
+./main data/erro2.txt comRabo
+
+```
+
+<p>Bateu na parede</p>
+
+```console
+./main data/erro3.txt comRabo
+
+```
+
+</details>
+
+__Observação sobre o windows__: Caso o programa seja detectado como vírus usar a versão compilada com o g++ ou configurar o windows defender para ignorar o executável que está na pasta do projeto (o problema só ocorre com a versão compilada pelo CL).
+
+## Contato
+
+Bruno Kaike do Nascimento Batista -
+*<brunokaike@ufrn.edu.br>*
+
+Link do projeto: [https://github.com/JulioMelo-Classes/trabalho-3-BrunoKaike](https://github.com/JulioMelo-Classes/trabalho-3-BrunoKaike)
+
