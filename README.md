@@ -24,20 +24,21 @@ No linux você pode compilar usando o g++. Apenas faça clone do projeto, e faç
 
 ```bash
 g++ src/*.cpp -o main -I./include
-./main
+./main <diretório> <comRabo/semrabo>
 ```
 
 No windows você pode compilar usando o g++ ou o cl de forma análoga:
 
 ```bash
 g++ src/*.cpp -o main -I./include
-.\main.exe
+.\main.exe <diretório> <comRabo/semrabo>
 ```
 ou usando o CL
 
 ```bash
 cl src/*.cpp -I./include
-.\Snaze.exe
+.\main.exe <diretório> <comRabo/semrabo>
+.\Snaze.exe 
 ```
 
 ## Testes por linha de comando
@@ -49,14 +50,14 @@ cl src/*.cpp -I./include
 <p>Spawn randômico</p>
 
 ```console
-./concordo < ../data/maze1.txt
+./main data/maze1.txt <comRabo/semrabo>
 
 ```
 
 <p>Spawn definido</p>
 
 ```console
-./concordo < ../data/maze1.txt
+./main data/maze1.txt <comRabo/semrabo>
 
 ```
 
@@ -69,21 +70,21 @@ cl src/*.cpp -I./include
 <p>Uma ou mais dimensões superiores a 100</p>
 
 ```console
-./main data/erro1.txt comRabo
+./main data/erro1.txt <comRabo/semrabo>
 
 ```
 
 <p>Uma ou mais dimensões inferiores a 1</p>
 
 ```console
-./main data/erro2.txt comRabo
+./main data/erro2.txt <comRabo/semrabo>
 
 ```
 
-<p>Bateu na parede/próprio corpo</p>
+<p>Bateu na parede</p>
 
 ```console
-./main data/erro3.txt comRabo
+./main data/erro3.txt <comRabo/semrabo>
 
 ```
 
