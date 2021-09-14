@@ -57,7 +57,7 @@ cl src/*.cpp -I./include
 <p>Spawn definido</p>
 
 ```console
-./main data/maze1.txt <comRabo/semrabo>
+./main data/maze2.txt <comRabo/semrabo>
 
 ```
 
