@@ -13,7 +13,7 @@ bool Player::verificarViabilidade(int row, int col, vector<vector<int>> &m, int 
 {
 	if (row == -1 || row == dimRows || col == -1 ||
 				col == dimCols || visited[row][col]
-						|| m[row][col] == 0 || m[row][col] == 2)
+						|| m[row][col] == 0 || m[row][col] == 2 || m[row][col] == 3)
 		return false;
 
 	return true;
@@ -95,7 +95,6 @@ bool Player::setarSolucao(vector<vector<int>> &m, int dimRows, int dimCols, int 
 
     if(caminhos.size() > 0){
         if(!caminhos[0].empty()){
-            cout << "->" << caminhos[0] << endl;
             this->ultimoCaminho = caminhos[0];
             return true;
         }
@@ -110,29 +109,33 @@ Directions Player::proximoMovimento(){
     
     Directions d;
     
-    if(!ultimoCaminho.empty()){
+    if(ultimoCaminho.empty()){
         
-        switch(ultimoCaminho.back()) {
+        d = Directions::BAIXO;
+       
+    } else {
+                
+        switch(ultimoCaminho[0]) {
         case 'B':
-             d = Directions::BAIXO;
+            d = Directions::BAIXO;
+            ultimoCaminho.erase(0,1);
             break;
         case 'C':
             d = Directions::CIMA;
+            ultimoCaminho.erase(0,1);
             break;
         case 'D':
             d = Directions::DIREITA;
+            ultimoCaminho.erase(0,1);
             break;
         case 'E':
             d = Directions::ESQUERDA;
+            ultimoCaminho.erase(0,1);
             break;
-        }
         
-    } else {
-        
-        d = Directions::BAIXO;
-        
+      }
+
     }
-    
     return d;
 
 }

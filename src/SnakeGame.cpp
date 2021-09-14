@@ -12,10 +12,10 @@
 
 using namespace std;
 
-SnakeGame::SnakeGame(){
+SnakeGame::SnakeGame(string diretorio){
     choice = "";
     frameCount = 0;
-    initialize_game();
+    initialize_game(diretorio);
 }
 
 void SnakeGame::resetarLevel(vector<int> &levelData, int &lineCount, int &qtdSpawnPlayer){
@@ -41,34 +41,34 @@ void SnakeGame::lerLevel(std::ifstream& levelFile){
         while(getline(levelFile, linha)){
             if(lineCount > 0){
 
-                for(int col = 0; col < levelData[0]; col++){
+                for(int r = 0; r < levelData[0]; r++){
 
                     maze.push_back(std::vector<int>());
 
-                    for(int row = 0; row < levelData[1]; row++){
+                    for(int c = 0; c < levelData[1]; c++){
 
-                        if(linha[row] == '#'){
+                        if(linha[c] == '#'){
 
-                            maze[col].push_back(0);
+                            maze[r].push_back(0);
 
-                        } else if(linha[row] == ' '){
+                        } else if(linha[c] == ' '){
 
-                            maze[col].push_back(1);
+                            maze[r].push_back(1);
 
-                        } else if(linha[row] == '*'){
+                        } else if(linha[c] == '*'){
 
-                            maze[col].push_back(2);
-                            level.setPlayerSpawn(std::make_pair(row, col));
+                            maze[r].push_back(2);
+                            level.setPlayerSpawn(std::make_pair(r, c));
                             qtdSpawnPlayer++;
 
-                        } else if(linha[row] == '.'){
+                        } else if(linha[c] == '.'){
 
-                            maze[col].push_back(3);
+                            maze[r].push_back(3);
 
                         }
                     }
 
-                    if(col < levelData[0]-1){
+                    if(r < levelData[0]-1){
                         getline(levelFile, linha);
                     }
                     lineCount++;
@@ -79,7 +79,13 @@ void SnakeGame::lerLevel(std::ifstream& levelFile){
                     levelAtual++;
                     return;
 
-                } else{
+                } else if(qtdSpawnPlayer==0){
+                  levels.push_back(level);
+                  levels[levelAtual].gerarPlayerSpawn(maze);
+                  levelAtual++;
+                  return;
+
+                } else {
 
                     resetarLevel(levelData, lineCount, qtdSpawnPlayer);
 
@@ -99,19 +105,21 @@ void SnakeGame::lerLevel(std::ifstream& levelFile){
                     levelData.push_back(temp);
                 }
 
-                level = Level(std::make_pair(levelData[0],levelData[1]), levelData[2], levelData[2]);
+                level = Level(std::make_pair(levelData[0],levelData[1]), levelData[2]);
 
                 if(levelData[0] <= 0 || levelData[1] <= 0){
 
                     cout << "\033[1;31mNúmero de linhas e/ou colunas inválidos(Dimensões inferiores ou iguais 0)\033[0m" << endl;
                     state = GAME_OVER;
                     game_over();
+                    break;
 
                 } else if(levelData[0] > 100 || levelData[1] > 100){
 
                     cout << "\033[1;31mNúmero de linhas e/ou colunas inválidos(Dimensões superiores a 100)\033[0m" << endl;
                     state = GAME_OVER;
                     game_over();
+                    break;
 
                 }
 
@@ -126,18 +134,24 @@ void SnakeGame::lerLevel(std::ifstream& levelFile){
 
 }
 
-void SnakeGame::initialize_game(){
+void SnakeGame::initialize_game(string diretorio){
     //carrega o nivel ou os níveis
     ifstream levelFile; //só dá certo se o jogo for executado dentro da raíz do diretório (vc vai resolver esse problema pegando o arquivo da linha de comando)
-    levelFile.open("data/maze1.txt");
+    levelFile.open(diretorio);
     lerLevel(levelFile);
 
-    this->s = Snake(levels[levelAtual-1].getPlayerSpawn(), true);
-    this->s.iniciarPlayer(levels[levelAtual-1].getPlayerSpawn().first, levels[levelAtual-1].getPlayerSpawn().second, maze);
-    levels[levelAtual-1].inicializarComidas(maze);
-    levels[levelAtual-1].adicionarComidaNoMapa(maze);
-    
-    state = RUNNING;
+    if(state != GAME_OVER){
+      this->s = Snake(levels[levelAtual-1].getPlayerSpawn(), this->comRabo);
+      s.resetarCauda(maze, levels[levelAtual-1].getPlayerSpawn());
+      levels[levelAtual-1].inicializarComidas(maze);
+      levels[levelAtual-1].adicionarComidaNoMapa(maze);
+      
+      imprimirMapa(levels[levelAtual-1].getDimensaoRow(), levels[levelAtual-1].getDimensaoCol());
+
+      state = RUNNING;
+
+    }
+    //state = GAME_OVER;
 }
 
 
@@ -152,7 +166,48 @@ void SnakeGame::process_actions(){
             cin>>std::ws>>choice;
             break;
         case RUNNING:
+            
+            if(s.getVidas()>0){
+              if(levels[levelAtual-1].getComidasRestantes() > 0){
+                string saida = s.executarSolucao(maze, levels[levelAtual-1].getDimensaoRow(), levels[levelAtual-1].getDimensaoCol(), levels[levelAtual-1].getPosComidaAtualRow(), levels[levelAtual-1].getPosComidaAtualCol());
+                if(saida == "chegou"){
+                  render();
+                  if(this->comRabo){
+                    s.aumentarCauda(maze);
+                  }
+                  s.aumentarScore();
+                  levels[levelAtual-1].aumentarComidaColetada();
+                  //state = GAME_OVER;
+                  //game_over();
+                  levels[levelAtual-1].adicionarComidaNoMapa(maze);
 
+                } else if(saida == ""){
+                  
+                
+                } else {
+                  //state = GAME_OVER;
+                  //game_over();
+                  cout << saida << endl;
+                  s.diminuirVida();
+                  s.resetarCauda(maze, levels[levelAtual-1].getPlayerSpawn());
+
+                }
+
+              } else {
+                
+                cout << "Você venceu!" << endl;
+                state = GAME_OVER;
+                game_over();
+
+              }
+
+            } else {
+              cout << "Suas vidas acabaram" << endl;
+              state = GAME_OVER;
+              game_over();
+
+            }
+          
             break;
         default:
             //nada pra fazer aqui
@@ -165,7 +220,7 @@ void SnakeGame::update(){
     switch(state){
         case RUNNING:
             if(frameCount>0 && frameCount%10 == 0) //depois de 10 frames o jogo pergunta se o usuário quer continuar
-                state = WAITING_USER;
+                //state = WAITING_USER;
             break;
         case WAITING_USER: //se o jogo estava esperando pelo usuário então ele testa qual a escolha que foi feita
             if(choice == "n"){
@@ -227,6 +282,7 @@ void SnakeGame::game_over(){
 }
 
 void SnakeGame::loop(){
+  
     while(state != GAME_OVER){
         process_actions();
         update();
@@ -241,9 +297,16 @@ void SnakeGame::imprimirCabecalho(){
 
   for(int x = 0; x < this->s.getVidas(); x++){
 
-    cout << heart;
+    cout << "\033[1;31m" << heart << "\033[0m ";
     
   }
+
+  for(int x = 0; x < 5-this->s.getVidas(); x++){
+
+    cout << "  ";
+
+  }
+
   cout << " | Score: " << this->s.getScore();
   cout << " | Comidas coletadas: " << this->levels[levelAtual-1].getComidasColetada() << " de " << this->levels[levelAtual-1].getComidasTotal();
   cout << endl;
@@ -251,25 +314,31 @@ void SnakeGame::imprimirCabecalho(){
 }
 
 void SnakeGame::imprimirMapa(int col, int row){
+    const char comida[] = "\xE2\x97\x8F";
+    const char cobra[] = "\xE2\xAC\xA3";
 
     for(int x = 0; x < col; x++){
 
         for(int y = 0; y < row; y++){
             if(maze[x][y]==0){
               
-              cout << "#";
+              cout << "\033[1;33m#\033[0m ";
               
             } else if(maze[x][y]==1){
               
-              cout << " ";
+              cout << "  ";
 
             } else if(maze[x][y]==2){
               
-              cout << "*";
+              cout << "\033[1;32m"<< cobra <<"\033[0m ";
+
+            } else if(maze[x][y]==3){
+              
+              cout << "  ";
 
             } else if(maze[x][y]==4){
               
-              cout << "o";
+              cout << "\033[1;35m" << comida << "\033[0m ";
 
             }
 
@@ -277,5 +346,11 @@ void SnakeGame::imprimirMapa(int col, int row){
 
         cout << endl;
     }
+
+}
+
+void SnakeGame::setComRabo(bool comRabo){
+
+  this->comRabo = comRabo;
 
 }
