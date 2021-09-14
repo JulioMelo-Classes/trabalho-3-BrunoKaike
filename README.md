@@ -80,7 +80,7 @@ cl src/*.cpp -I./include
 
 ```
 
-<p>Bateu na parede</p>
+<p>Bateu na parede/próprio corpo</p>
 
 ```console
 ./main data/erro3.txt comRabo
